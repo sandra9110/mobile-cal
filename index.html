@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Calculator Pro</title>
+
+<style>
+/* ================= ROOT THEMES ================= */
+:root{
+    --bg:#0f0f0f;
+    --panel:#1c1c1c;
+    --btn:#2c2c2c;
+    --text:#fff;
+    --accent:#00ff88;
+}
+
+.light{
+    --bg:#f2f2f2;
+    --panel:#ffffff;
+    --btn:#e0e0e0;
+    --text:#000;
+    --accent:#0077ff;
+}
+
+/* ================= GLOBAL ================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+/* ================= PHONE ================= */
+.phone{
+    width:100%;
+    max-width:420px;
+    height:100vh;
+    background:var(--panel);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+/* TOP BAR */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+}
+
+/* TOGGLE SWITCH */
+.switch{
+    width:50px;
+    height:25px;
+    background:#555;
+    border-radius:20px;
+    position:relative;
+    cursor:pointer;
+}
+
+.switch::after{
+    content:"";
+    position:absolute;
+    width:20px;
+    height:20px;
+    background:white;
+    border-radius:50%;
+    top:2.5px;
+    left:3px;
+    transition:0.3s;
+}
+
+.switch.active{
+    background:var(--accent);
+}
+
+.switch.active::after{
+    left:27px;
+}
+
+/* DISPLAY */
+.display{
+    height:120px;
+    padding:20px;
+    font-size:40px;
+    text-align:right;
+    display:flex;
+    align-items:flex-end;
+    justify-content:flex-end;
+    overflow:hidden;
+}
+
+/* MODE SWITCH AREA */
+.mode-switch{
+    display:flex;
+    justify-content:space-around;
+    padding:10px;
+    font-size:14px;
+    opacity:0.7;
+}
+
+/* SLIDER AREA */
+.slider{
+    display:flex;
+    width:200%;
+    transition:0.4s ease-in-out;
+}
+
+/* PANELS */
+.panel{
+    width:50%;
+    padding:10px;
+}
+
+/* BUTTON GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+/* BUTTONS */
+button{
+    padding:18px;
+    font-size:18px;
+    border:none;
+    border-radius:15px;
+    background:var(--btn);
+    color:var(--text);
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:active{
+    transform:scale(0.95);
+}
+
+.equal{
+    background:var(--accent);
+    color:#fff;
+}
+
+/* SCIENTIFIC SMALL BUTTONS */
+.small{
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <h3>Calculator</h3>
+        <div class="switch" id="themeSwitch"></div>
+    </div>
+
+    <!-- DISPLAY -->
+    <div class="display" id="display">0</div>
+
+    <!-- MODE TEXT -->
+    <div class="mode-switch">
+        <span>Basic</span>
+        <span>Scientific</span>
+    </div>
+
+    <!-- SLIDER -->
+    <div class="slider" id="slider">
+
+        <!-- BASIC -->
+        <div class="panel">
+            <div class="grid">
+                <button onclick="clr()">C</button>
+                <button onclick="append('/')">/</button>
+                <button onclick="append('*')">*</button>
+                <button onclick="append('-')">-</button>
+
+                <button onclick="append('7')">7</button>
+                <button onclick="append('8')">8</button>
+                <button onclick="append('9')">9</button>
+                <button onclick="append('+')">+</button>
+
+                <button onclick="append('4')">4</button>
+                <button onclick="append('5')">5</button>
+                <button onclick="append('6')">6</button>
+                <button onclick="calc()" class="equal">=</button>
+
+                <button onclick="append('1')">1</button>
+                <button onclick="append('2')">2</button>
+                <button onclick="append('3')">3</button>
+                <button onclick="append('0')">0</button>
+            </div>
+        </div>
+
+        <!-- SCIENTIFIC -->
+        <div class="panel">
+            <div class="grid">
+                <button class="small" onclick="append('Math.sin(')">sin</button>
+                <button class="small" onclick="append('Math.cos(')">cos</button>
+                <button class="small" onclick="append('Math.tan(')">tan</button>
+                <button onclick="clr()">C</button>
+
+                <button class="small" onclick="append('Math.log10(')">log</button>
+                <button class="small" onclick="append('Math.sqrt(')">√</button>
+                <button onclick="append('(')">(</button>
+                <button onclick="append(')')">)</button>
+
+                <button onclick="append('7')">7</button>
+                <button onclick="append('8')">8</button>
+                <button onclick="append('9')">9</button>
+                <button onclick="append('/')">/</button>
+
+                <button onclick="append('4')">4</button>
+                <button onclick="append('5')">5</button>
+                <button onclick="append('6')">6</button>
+                <button onclick="append('*')">*</button>
+
+                <button onclick="append('1')">1</button>
+                <button onclick="append('2')">2</button>
+                <button onclick="append('3')">3</button>
+                <button class="equal" onclick="calc()">=</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+let display = document.getElementById("display");
+let slider = document.getElementById("slider");
+let themeSwitch = document.getElementById("themeSwitch");
+
+let isScientific = false;
+
+/* ================= INPUT ================= */
+function append(val){
+    if(display.innerText === "0"){
+        display.innerText = val;
+    }else{
+        display.innerText += val;
+    }
+}
+
+function clr(){
+    display.innerText = "0";
+}
+
+/* ================= CALCULATE ================= */
+function calc(){
+    try{
+        display.innerText = eval(display.innerText);
+    }catch{
+        display.innerText = "Error";
+    }
+}
+
+/* ================= MODE SWITCH ANIMATION ================= */
+slider.addEventListener("click", ()=>{
+    isScientific = !isScientific;
+    slider.style.transform = isScientific ? "translateX(-50%)" : "translateX(0%)";
+});
+
+/* ================= THEME TOGGLE ================= */
+themeSwitch.addEventListener("click", ()=>{
+    document.body.classList.toggle("light");
+    themeSwitch.classList.toggle("active");
+});
+
+</script>
+
+</body>
+</html>
